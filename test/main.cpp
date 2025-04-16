@@ -15,8 +15,8 @@ int main()
 
     std::cout << "Done!\r\n";
     
-    std::cout << "section1.key1: " << config.GetString("section1", "key1", "section1.key1 failed to read") << "\r\n";
-    std::cout << "section1.key2: " << config.GetString("section1", "key2", "section1.key2 failed to read") << "\r\n";
-    std::cout << "section2.key1: " << config.GetString("section2", "key1", "section2.key1 failed to read") << "\r\n";
-    std::cout << "section2.key2: " << config.GetString("section2", "key2", "section2.key2 failed to read") << "\r\n";
+    std::cout << "section1.key1: " << config.Get("section1", "key1", "section1.key1 failed to read") << "\r\n";
+    std::cout << "section1.key2: " << config.Get("section1", "key2", "section1.key2 failed to read") << "\r\n";
+    std::cout << "section2.key1: " << config.Get("section2", "key1", "section2.key1 failed to read") << "\r\n";
+    std::cout << "section2.key2: " << config.Get("section2", "key2", "section2.key2 failed to read") << "\r\n";
 }

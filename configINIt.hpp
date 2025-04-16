@@ -91,7 +91,7 @@ public:
         return true;
     }
 
-    std::string GetString(const std::string& sectionKey, const std::string& key, const std::string& defaultValue) const
+    std::string Get(const std::string& sectionKey, const std::string& key, const std::string& defaultValue) const
     {
         auto section = data.find(sectionKey);
         if (section != data.end())

@@ -1,0 +1,18 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug configINIt_test",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/configINIt_test.exe",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}/build/",
+            "externalConsole": false,
+            "console": "integratedTerminal",
+            "environment": [],
+            "preLaunchTask": "build"
+        }
+    ]
+}

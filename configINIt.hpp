@@ -87,7 +87,34 @@ public:
                 data[section][key] = value;
             }
         }
+
+        file.close(); // optional - ifstream closes automatically when destructor is called
     
+        return true;
+    }
+
+    bool Save(const std::string& filename)
+    {
+        std::ofstream file(filename);
+        if (!file.is_open())
+        {
+            return false;
+        }
+
+        for (const std::pair<const std::string, std::unordered_map<std::string, std::string>>& section : data)
+        {
+            file << "[" << section.first << "]" << std::endl;
+
+            for (const std::pair<const std::string, std::string>& kvp : section.second)
+            {
+                file << kvp.first << "=" << kvp.second << std::endl;
+            }
+
+            file << std::endl;
+        }
+
+        file.close(); // optional - ofstream closes automatically when destructor is called
+
         return true;
     }
 
@@ -104,5 +131,10 @@ public:
         }
     
         return defaultValue;
+    }
+
+    void Set(const std::string& sectionKey, const std::string& key, const std::string& value)
+    {
+        data[sectionKey][key] = value;
     }
 };

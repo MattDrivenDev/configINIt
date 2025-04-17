@@ -133,8 +133,20 @@ public:
         return defaultValue;
     }
 
-    void Set(const std::string& sectionKey, const std::string& key, const std::string& value)
+    void Set(std::string sectionKey, std::string key, std::string value)
     {
+        // Let's not allow empty section or key names
+        if (sectionKey.empty() || key.empty())
+        {
+            return;
+        }
+
+        // When we load, we trim the strings so that the config is clean. 
+        // So, let's do the same when we set a value too.
+        TrimString(sectionKey);
+        TrimString(key);
+        TrimString(value);
+
         data[sectionKey][key] = value;
     }
 };

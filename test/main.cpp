@@ -32,6 +32,7 @@ int main()
 
     config.Set("newsection", "key1", "hello world!");
     config.Set("section1", "key1", "you know when you've been tango'd");
+    config.Set(" section2", "key2 ", " changed value ");
 
     if (!config.Save("config_new.ini"))
     {

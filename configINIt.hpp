@@ -3,7 +3,16 @@
 #include <string>
 #include <unordered_map>
 
-class configINIt {
+/// @brief Useful for unit testing and mocking.
+class configBase {
+public:
+    virtual ~configBase() = default;
+    virtual std::string Get(const std::string& sectionKey, const std::string& key, const std::string& defaultValue) const = 0;
+    virtual void Set(std::string sectionKey, std::string key, std::string value) = 0;
+};
+
+
+class configINIt : public configBase {
 private:
     std::unordered_map<std::string, std::unordered_map<std::string, std::string>> data;
 
@@ -118,7 +127,7 @@ public:
         return true;
     }
 
-    std::string Get(const std::string& sectionKey, const std::string& key, const std::string& defaultValue) const
+    std::string Get(const std::string& sectionKey, const std::string& key, const std::string& defaultValue) const override
     {
         auto section = data.find(sectionKey);
         if (section != data.end())
@@ -133,7 +142,7 @@ public:
         return defaultValue;
     }
 
-    void Set(std::string sectionKey, std::string key, std::string value)
+    void Set(std::string sectionKey, std::string key, std::string value) override
     {
         // Let's not allow empty section or key names
         if (sectionKey.empty() || key.empty())

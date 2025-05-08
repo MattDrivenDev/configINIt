@@ -14,6 +14,14 @@ int main()
     }
 
     std::cout << "Done!\r\n";
+
+    auto descriptionLines = config.GetRawLines("description");
+    std::cout << "Description\r\n";
+    for (std::string& line : descriptionLines)
+    {
+        std::cout << line << "\r\n";
+    }
+    std::cout << "\r\n";
     
     std::cout << "section1.key1: " << config.Get("section1", "key1", "section1.key1 failed to read") << "\r\n";
     std::cout << "section1.key2: " << config.Get("section1", "key2", "section1.key2 failed to read") << "\r\n";

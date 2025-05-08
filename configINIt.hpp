@@ -3,18 +3,25 @@
 #include <string>
 #include <unordered_map>
 
+struct configSection
+{
+    std::unordered_map<std::string, std::string> kvps;
+    std::vector<std::string> rawLines;
+};
+
 /// @brief Useful for unit testing and mocking.
 class configBase {
 public:
     virtual ~configBase() = default;
     virtual std::string Get(const std::string& sectionKey, const std::string& key, const std::string& defaultValue) const = 0;
+    virtual std::vector<std::string> GetRawLines(const std::string& sectionKey) const = 0;
     virtual void Set(std::string sectionKey, std::string key, std::string value) = 0;
+    virtual void SetRawLines(std::string sectionKey, std::vector<std::string> values) = 0;
 };
-
 
 class configINIt : public configBase {
 private:
-    std::unordered_map<std::string, std::unordered_map<std::string, std::string>> data;
+    std::unordered_map<std::string, configSection> data;
 
     inline void TrimString(std::string& s)
     {
@@ -84,16 +91,18 @@ public:
                 size_t pos;
                 std::string key, value;
     
-                if (!IsKeyValueLine(line, pos))
+                if (IsKeyValueLine(line, pos))
                 {
-                    continue;
+                    key = line.substr(0, pos);
+                    value = line.substr(pos + 1);
+                    TrimString(key);
+                    TrimString(value);
+                    data[section].kvps[key] = value;
                 }
-    
-                key = line.substr(0, pos);
-                value = line.substr(pos + 1);
-                TrimString(key);
-                TrimString(value);
-                data[section][key] = value;
+                else
+                {
+                    data[section].rawLines.push_back(line);
+                }                
             }
         }
 
@@ -110,11 +119,16 @@ public:
             return false;
         }
 
-        for (const std::pair<const std::string, std::unordered_map<std::string, std::string>>& section : data)
+        for (const std::pair<const std::string, configSection>& section : data)
         {
             file << "[" << section.first << "]" << std::endl;
 
-            for (const std::pair<const std::string, std::string>& kvp : section.second)
+            for (const std::string& rawLine : section.second.rawLines)
+            {
+                file << rawLine << std::endl;
+            }
+
+            for (const std::pair<const std::string, std::string>& kvp : section.second.kvps)
             {
                 file << kvp.first << "=" << kvp.second << std::endl;
             }
@@ -132,14 +146,24 @@ public:
         auto section = data.find(sectionKey);
         if (section != data.end())
         {
-            auto kvp = section->second.find(key);
-            if (kvp != section->second.end())
+            auto kvp = section->second.kvps.find(key);
+            if (kvp != section->second.kvps.end())
             {
                 return kvp->second;
             }
         }
     
         return defaultValue;
+    }
+
+    std::vector<std::string> GetRawLines(const std::string& sectionKey) const override
+    {
+        auto section = data.find(sectionKey);
+        if (section != data.end())
+        {
+            auto rawLines = section->second.rawLines;
+            return rawLines;
+        }
     }
 
     void Set(std::string sectionKey, std::string key, std::string value) override
@@ -156,6 +180,20 @@ public:
         TrimString(key);
         TrimString(value);
 
-        data[sectionKey][key] = value;
+        data[sectionKey].kvps[key] = value;
+    }
+
+    void SetRawLines(std::string sectionKey, std::vector<std::string> values) override
+    {
+        // Ignore empty section or values
+        if (sectionKey.empty() || values.empty())
+        {
+            return;
+        }
+
+        // We'll trim.
+        TrimString(sectionKey);
+
+        data[sectionKey].rawLines = values;
     }
 };

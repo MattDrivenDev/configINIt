@@ -14,6 +14,8 @@ class configBase {
 public:
     virtual ~configBase() = default;
     virtual std::string Get(const std::string& sectionKey, const std::string& key, const std::string& defaultValue) const = 0;
+    virtual size_t GetKeyCount(const std::string& sectionKey) const = 0;
+    virtual std::vector<std::string> GetKeys(const std::string& sectionKey) const = 0;
     virtual std::vector<std::string> GetRawLines(const std::string& sectionKey) const = 0;
     virtual void Set(std::string sectionKey, std::string key, std::string value) = 0;
     virtual void SetRawLines(std::string sectionKey, std::vector<std::string> values) = 0;
@@ -141,6 +143,33 @@ public:
         return true;
     }
 
+    size_t GetKeyCount(const std::string& sectionKey) const override
+    {
+        auto section = data.find(sectionKey);
+        if (section != data.end())
+        {
+            return section->second.kvps.size();
+        }
+    
+        return 0;
+    }
+
+    std::vector<std::string> GetKeys(const std::string& sectionKey) const override
+    {
+        auto section = data.find(sectionKey);
+        if (section != data.end())
+        {
+            std::vector<std::string> keys;
+            for (const auto& kvp : section->second.kvps)
+            {
+                keys.push_back(kvp.first);
+            }
+            return keys;
+        }
+    
+        return {};
+    }
+
     std::string Get(const std::string& sectionKey, const std::string& key, const std::string& defaultValue) const override
     {
         auto section = data.find(sectionKey);
@@ -164,6 +193,8 @@ public:
             auto rawLines = section->second.rawLines;
             return rawLines;
         }
+
+        return {};
     }
 
     void Set(std::string sectionKey, std::string key, std::string value) override
